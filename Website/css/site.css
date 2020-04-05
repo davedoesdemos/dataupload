@@ -1,0 +1,17 @@
+.dropZone {
+    background-color: white;
+    margin: auto;
+    width: 80vw;
+    height: 50vh;
+    border: 1px solid blue;
+    text-align: center;
+    vertical-align: middle;
+}
+.dropZoneText{
+    position: relative;
+    top: 40%;
+}
+
+body {
+    background-color: lightblue;
+}
