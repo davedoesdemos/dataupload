@@ -38,3 +38,12 @@
 body {
     background-color: lightblue;
 }
+
+#statusBox {
+    background-color: white;
+    text-align: left;
+}
+
+#statusBox.highlight {
+    background-color: lightgreen;
+}

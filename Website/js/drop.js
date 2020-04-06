@@ -44,25 +44,53 @@ function handleFiles(files) {
     ([...files]).forEach(uploadFile);
   }
 
-
+function reportStatus(message){
+    document.getElementById("statusBox").innerHTML += message + "<br />";
+    document.getElementById("statusBox").classList.add('highlight')
+}
 
 let url = new URL(document.location.href);
 let searchParams = new URLSearchParams(url.search);
-//const accountName = searchParams.get("accountName");
-//const sasString = searchParams.get("sasString");
-//const containerName = searchParams.get("containerName");
-const accountName = "";
-const sasString = "";
-const containerName = "";
+
+//get account info
+const accountName = searchParams.get("accountName");
+const containerName = searchParams.get("containerName");
+
+//regenerate the valid SAS key
+const sv = searchParams.get("sv");
+var sasString = "?";//reinsert the ?
+sasString += "sv=" + sv;
+const ss = searchParams.get("ss");
+sasString += "&ss=" + ss;
+const srt = searchParams.get("srt");
+sasString += "&srt=" + srt;
+const sp = searchParams.get("sp");
+sasString += "&sp=" + sp;
+const se = searchParams.get("se");
+sasString += "&se=" + se;
+const st = searchParams.get("st");
+sasString += "&st=" + st;
+const spr = searchParams.get("spr");
+sasString += "&spr=" + spr;
+const sig = searchParams.get("sig");
+sasString += "&sig=" + encodeURIComponent(sig);//must be encoded
+
 const containerURL = new azblob.ContainerURL(
     `https://${accountName}.blob.core.windows.net/${containerName}?${sasString}`,
     azblob.StorageURL.newPipeline(new azblob.AnonymousCredential));
 
-    function uploadFile(file){
+async function uploadFile(file){
+    try {
+        reportStatus("Uploading files...");
+        const promises = [];
         const blockBlobURL = azblob.BlockBlobURL.fromContainerURL(containerURL, file.name);
-        azblob.uploadBrowserDataToBlockBlob(
-            azblob.Aborter.none, file, blockBlobURL);
-      }
-
-    //-------------------------------------------
-   
+        promises.push(azblob.uploadBrowserDataToBlockBlob(
+            azblob.Aborter.none, file, blockBlobURL)
+            );
+        await Promise.all(promises);
+        reportStatus(file.name + "File Uploaded.");
+        listFiles();
+    } catch (error) {
+        reportStatus(error.body.message);
+    }
+}
