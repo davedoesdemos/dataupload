@@ -19,9 +19,10 @@ For this demo, you'll need a storage account and the code from this repository. 
 ### Static Website on Blob
 
 First, you'll want to set up using your storage account as a static website. This allows you to browse it without a costly web server. To do this, click static website in the settings menu and then type index.html in the index document name and click save. This will allow you to use the generated url without the /index.html part on the end. It's not entirely necessary since here we'll be supplying whole urls to people for security purposes. 
+
 ![staticWebsite.png](images/staticWebsite.png)
 
-Next, upload the files from the repository into the root of the new $web container that has been created for your site. You'll need to tell it to upload to a folder for the css, js and libs folders. Once these are uploaded, create another container and call it "uploads". This container should be private since we don't want to give public access to the uploaded files.
+Next, upload the files from the repository into the root of the new $web container that has been created for your site. You'll need to tell it to upload to a folder for the css, js and libs folders. **Please note that you'll need to download and extract the files from [here](https://aka.ms/downloadazurestoragejsblob) in the libs folder since I cannot republish them**. Once these are uploaded, create another container and call it "uploads". This container should be private since we don't want to give public access to the uploaded files.
 
 ### Set up CORS
 
