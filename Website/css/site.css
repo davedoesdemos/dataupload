@@ -20,15 +20,15 @@
     font-size: xx-large;
 }
 
-#browseButton {
-    background-color: slategray;
-    border: 1px solid black;
-    text-align: center;
-    width: 10vw;
+.browseButton {
     margin: auto;
-    margin-top: 10px;
-    font-size: large;
+    width: 20vw;
+    height: 5vh;
     padding: 10px;
+    background-color: lightgrey;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid black;
 }
 
 #browseButton.hover {
@@ -47,3 +47,7 @@ body {
 #statusBox.highlight {
     background-color: lightgreen;
 }
+
+#fileElem {
+    display: none;
+  }

@@ -9,10 +9,13 @@
     <body>
         <div class="dropZone" id="dropZone">
             <span class="dropZoneText" id="dropZoneText">Drop your files here</span><br />
-            <span class="statusBox" id="statusBox"></span>
+            
+        <form>
+            <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
+            <label class="browseButton" for="fileElem">Select some files</label>
+        </form>
         </div>
-        <div class="browseButton" id="browseButton">Browse for files</div>
-        
+        <span class="statusBox" id="statusBox"></span>
         <script src="libs/azure-storage-blob.js" charset="utf-8"></script>
         <script src="js/drop.js" charset="utf-8"></script>
     </body>
