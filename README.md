@@ -15,3 +15,6 @@ A solution to upload data to storage through a browser using the API
 
 publish the files and then create links as per this formula:
 https://<url>/index.html<SASKey>
+
+### Generate the SAS Key
+![sasKey.png](images/sasKey.png)
