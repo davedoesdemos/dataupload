@@ -1,23 +1,38 @@
-.dropZone {
+#dropZone {
     background-color: white;
     margin: auto;
     width: 80vw;
     height: 50vh;
-    border: 1px solid blue;
+    border: 3px dashed blue;
+    border-radius: 1vw;
     text-align: center;
     vertical-align: middle;
 }
-.dropZoneText {
+
+#dropZone.highlight {
+    border: 3px solid purple;
+    background-color: gray;
+  }
+
+#dropZoneText {
     position: relative;
     top: 40%;
+    font-size: xx-large;
 }
 
-.browseButton {
+#browseButton {
     background-color: slategray;
     border: 1px solid black;
     text-align: center;
     width: 10vw;
     margin: auto;
+    margin-top: 10px;
+    font-size: large;
+    padding: 10px;
+}
+
+#browseButton.hover {
+    background-color: gray;
 }
 
 body {
