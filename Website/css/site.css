@@ -6,7 +6,6 @@
     border: 3px dashed blue;
     border-radius: 1vw;
     text-align: center;
-    vertical-align: middle;
 }
 
 #dropZone.highlight {
@@ -14,9 +13,9 @@
     background-color: gray;
   }
 
-#dropZoneText {
+.dropZoneText {
     position: relative;
-    top: 40%;
+    top: 20vh;
     font-size: xx-large;
 }
 
