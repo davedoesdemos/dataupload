@@ -50,3 +50,283 @@ Please note that there is no extra ? before the SAS key since it includes one al
 ![website.png](images/website.png)
 
 You can either click the button to browse for files, or you can drag them into the dashed box. Either way they will upload to your storage account.
+
+## Code
+
+### HTML
+
+The HTML file is fairly simple and just contains some div elements to house the form and drop zone.
+
+```HTML
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>BlobDrop</title>
+        <link rel="stylesheet" type="text/css" href="css/site.css" />
+    </head>
+    <body>
+        <div id="outerContainer">
+            <div id="top"><span id="titleBar">BlobDrop</span></div>
+            <div id="bottom">
+                <div id="top-left">
+                    <form>
+                        <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
+                        <label class="browseButton" for="fileElem"><span class="browseButtonText">Click to select some files</span></label>
+                    </form>
+                </div>
+                <div id="top-right"><span class="dropZoneText">Drop Files Here</span></div>
+                <div id="bottom-left"><span class="statusBox" id="statusBox"></span></div>
+                <div id="bottom-right"></div>
+            </div>
+        </div>
+        
+        <script src="libs/azure-storage-blob.js" charset="utf-8"></script>
+        <script src="js/drop.js" charset="utf-8"></script>
+    </body>
+</html>
+```
+
+### CSS
+
+Most of the CSS is for presentation but includes functional things like highlights for the button and text responses.
+
+```CSS
+#outerContainer {
+    position: absolute;
+    top: 5vh;
+    left: 5vw;
+    margin: auto;
+    border 3px solid black;
+    border-radius: 1vw;
+    width: 90vw;
+    height: 90vh;
+    background-color: mediumblue;
+}
+
+#top {
+    position: absolute;
+    top: 0vh;
+    left: 0vw;
+    border 2px solid black;
+    border-radius: 1vw 1vw 0vw 0vw;
+    width: 90vw;
+    height: 10vh;
+    background-color: grey;
+}
+
+#titleBar {
+    position: absolute;
+    bottom: 2vh;
+    width: 100%;
+    text-align: center;
+    padding-right: 5vw;
+    font-size: xx-large;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bolder;
+    color: white;
+}
+
+#bottom {
+    position: absolute;
+    top: 10vh;
+    left: 0vw;
+    width: 90vw;
+    height: 80vh;
+    border 2px solid black;
+    border-radius: 0px 0px 1vw 1vw;
+    background-color: lightgrey;
+}
+
+#top-left {
+    position: absolute;
+    top: 3vh;
+    left: 2vw;
+    background-color: steelblue;
+    width: 42vw;
+    height: 35.5vh;
+
+}
+
+#fileElem {
+    display: none;
+}
+
+.browseButton {
+    position: absolute;
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.browseButton:hover {
+    background-color: #74A1C7;
+}
+
+.browseButtonText {
+    position: absolute;
+    top: 49%;
+    width: 100%;
+    text-align: center;
+    font-size: xx-large;
+    font-weight: bold;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#top-right {
+    position: absolute;
+    top: 3vh;
+    right: 2vw;
+    background-color: white;
+    border-radius: 1vw;
+    border: 0.2vw dashed grey;
+    width: 42vw;
+    height: 35.5vh;
+}
+
+.dropZoneText {
+    position: absolute;
+    top: 49%;
+    width: 100%;
+    text-align: center;
+    font-size: xx-large;
+    font-weight: bold;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#bottom-left {
+    position: absolute;
+    bottom: 3vh;
+    left: 2vw;
+    background-color: steelblue;
+    width: 42vw;
+    height: 35.5vh;
+
+}
+
+#statusBox {
+    background-color: steelblue;
+    text-align: left;
+}
+
+#statusBox.highlight {
+    background-color: lightgreen;
+}
+
+#bottom-right {
+    position: absolute;
+    bottom: 3vh;
+    right: 2vw;
+    background-color: steelblue;
+    width: 42vw;
+    height: 35.5vh;
+
+}
+
+body {
+    background-color: #323237;
+}
+```
+
+### Javascript
+
+The Javascript mainly consists of listeners to make the page work with drag and drop. Both the form and the drop action call a function to submit files to Blob. For this, we need to connect to the storage account specified in the URI with the SAS token and then push the files up one at a time.
+
+```javascript
+
+//get the drop zone
+let dropZone = document.getElementById('top-right');
+
+//set up the listeners to prevent propogation
+;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+  });
+  
+function preventDefaults (e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+//set up listeners for the drag and feedback
+;['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, highlight, false);
+});
+  
+;['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, unhighlight, false);
+})
+  
+function highlight(e) {
+    dropZone.classList.add('highlight');
+}
+  
+function unhighlight(e) {
+    dropZone.classList.remove('highlight');
+}
+
+//set up the drop handler
+dropZone.addEventListener('drop', handleDrop, false)
+
+function handleDrop(e) {
+    let dt = e.dataTransfer;
+    let files = dt.files;
+    
+    handleFiles(files);
+}
+
+//the file handler
+function handleFiles(files) {
+    ([...files]).forEach(uploadFile);
+  }
+
+function reportStatus(message){
+    document.getElementById("statusBox").innerHTML += message + "<br />";
+    document.getElementById("statusBox").classList.add('highlight')
+}
+
+let url = new URL(document.location.href);
+let searchParams = new URLSearchParams(url.search);
+
+//get account info
+const accountName = searchParams.get("accountName");
+const containerName = searchParams.get("containerName");
+
+//regenerate the valid SAS key
+const sv = searchParams.get("sv");
+var sasString = "?";//reinsert the ?
+sasString += "sv=" + sv;
+const ss = searchParams.get("ss");
+sasString += "&ss=" + ss;
+const srt = searchParams.get("srt");
+sasString += "&srt=" + srt;
+const sp = searchParams.get("sp");
+sasString += "&sp=" + sp;
+const se = searchParams.get("se");
+sasString += "&se=" + se;
+const st = searchParams.get("st");
+sasString += "&st=" + st;
+const spr = searchParams.get("spr");
+sasString += "&spr=" + spr;
+const sig = searchParams.get("sig");
+sasString += "&sig=" + encodeURIComponent(sig);//must be encoded
+
+const containerURL = new azblob.ContainerURL(
+    `https://${accountName}.blob.core.windows.net/${containerName}?${sasString}`,
+    azblob.StorageURL.newPipeline(new azblob.AnonymousCredential));
+
+async function uploadFile(file){
+    try {
+        reportStatus("Uploading files...");
+        const promises = [];
+        const blockBlobURL = azblob.BlockBlobURL.fromContainerURL(containerURL, file.name);
+        promises.push(azblob.uploadBrowserDataToBlockBlob(
+            azblob.Aborter.none, file, blockBlobURL)
+            );
+        await Promise.all(promises);
+        reportStatus(file.name + "File Uploaded.");
+        listFiles();
+    } catch (error) {
+        reportStatus(error.body.message);
+    }
+}
+```
